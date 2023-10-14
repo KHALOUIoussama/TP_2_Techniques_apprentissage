@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-#####
-# VotreNom (VotreMatricule) .~= À MODIFIER =~.
+###### 
+#Timothée Blanchy (timb1101)
+# Oussama Khaloui (khao1201)
 ###
 
 import numpy as np
