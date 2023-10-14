@@ -2,7 +2,7 @@
 
 #####
 # Timothée Blanchy (timb1101)
-# Oussama
+# Oussama Khaloui (khao1201)
 ####
 
 import numpy as np
