@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 #####
-# Timothée Blanchy (timb1101)
-# Oussama
-####
+#Timothée Blanchy (timb1101)
+# Oussama Khaloui (khao1201)
+###
 
 import numpy as np
 
