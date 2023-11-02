@@ -35,6 +35,8 @@ def main():
     bruit = float(sys.argv[5])
     donnees_aberrantes = bool(int(sys.argv[6]))
 
+    print(f"method = {method}, nb_train = {nb_train}, nb_test = {nb_test}, lambda = {lamb}, bruit = {bruit}, donnees_aberrantes = {donnees_aberrantes}")
+
     print("Generation des données d'entrainement...")
 
     gestionnaire_donnees = gd.GestionDonnees(donnees_aberrantes, nb_train, nb_test, bruit)

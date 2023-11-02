@@ -65,15 +65,54 @@ class ClassifieurLineaire:
         """
         if self.methode == 1:  # Classification generative
             print('Classification generative')
-            # AJOUTER CODE ICI
+            N = len(t_train)
+            p = np.sum(t_train) / N
+            mu_1 = np.sum(t_train * x_train.T, axis=1) / (p * N)
+            mu_2 = np.sum((1 - t_train) * x_train.T, axis=1) / ((1 - p) * N)
+
+            # sigma1 = 1/N1 sum [n in C1] (xn-mu_1)(xn-mu1)t but self.lamb must be added to the diagonal
+            sigma1 = np.sum(t_train * np.dot((x_train.T - mu_1).T, (x_train.T - mu_1)), axis=1) / np.sum(t_train)
+            # sigma2 = 1/N2 sum [n in C2] (xn-mu_2)(xn-mu2)t but self.lamb must be added to the diagonal
+            sigma2 = np.sum((1 - t_train) * np.dot((x_train.T - mu_2).T, (x_train.T - mu_2)), axis=1) / np.sum(1 - t_train)
+        
+
+            # sigma = p * sigma1 + (1-p) * sigma2 but self.lamb must be added to the diagonal
+            sigma = p * sigma1 + (1 - p) * sigma2
+
+
 
         elif self.methode == 2:  # Perceptron + SGD, learning rate = 0.001, nb_iterations_max = 1000
             print('Perceptron')
-            # AJOUTER CODE ICI
+
+            # On initialise les paramètres
+            self.w = np.random.randn(2)
+            self.w_0 = np.random.randn(1)
+            learning_rate = 0.001
+            nb_iterations_max = 1000
+            iter = 0
+            convergence = False
+
+            # On effectue la descente de gradient
+            while not convergence and iter < nb_iterations_max:
+                for i in range(len(t_train)):
+                    if t_train[i] * (np.dot(self.w, x_train[i]) + self.w_0) <= 0:
+                        self.w += learning_rate * t_train[i] * x_train[i]
+                        self.w_0 += learning_rate * t_train[i]
+                iter += 1
+
+            
+
+            
+
 
         else:  # Perceptron + SGD [sklearn] + learning rate = 0.001 + penalty 'l2' voir http://scikit-learn.org/
             print('Perceptron [sklearn]')
-            # AJOUTER CODE ICI
+            # On utilise le perceptron de sklearn
+            perceptron = Perceptron(penalty='l2', alpha=self.lamb, max_iter=1000, eta0=0.001)
+            perceptron.fit(x_train, t_train)
+            self.w = perceptron.coef_[0]
+            self.w_0 = perceptron.intercept_[0]
+
 
         print('w = ', self.w, 'w_0 = ', self.w_0, '\n')
 
@@ -88,8 +127,7 @@ class ClassifieurLineaire:
         a préalablement été appelée. Elle doit utiliser les champs ``self.w``
         et ``self.w_0`` afin de faire cette classification.
         """
-        # AJOUTER CODE ICI
-        return 0
+        return int(np.dot(self.w, x) + self.w_0 > 0)
 
     @staticmethod
     def erreur(t, prediction):
@@ -98,8 +136,7 @@ class ClassifieurLineaire:
         1. si la cible ``t`` et la prédiction ``prediction``
         sont différentes, 0. sinon.
         """
-        # AJOUTER CODE ICI
-        return 0
+        return int(t != prediction)
 
     def afficher_donnees_et_modele(self, x_train, t_train, x_test, t_test):
         """
