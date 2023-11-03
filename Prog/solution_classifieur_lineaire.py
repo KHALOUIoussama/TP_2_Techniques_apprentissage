@@ -65,19 +65,35 @@ class ClassifieurLineaire:
         """
         if self.methode == 1:  # Classification generative
             print('Classification generative')
-            N = len(t_train)
-            p = np.sum(t_train) / N
-            mu_1 = np.sum(t_train * x_train.T, axis=1) / (p * N)
-            mu_2 = np.sum((1 - t_train) * x_train.T, axis=1) / ((1 - p) * N)
+                    
+            N = len(t_train)  # nombre de données
+            N1 = np.sum(t_train)  # nombre de données de classe 1
+            N2 = N - N1  # nombre de données de classe 2
+                    
+            p = N1 / N
 
-            # sigma1 = 1/N1 sum [n in C1] (xn-mu_1)(xn-mu1)t but self.lamb must be added to the diagonal
-            sigma1 = np.sum(t_train * np.dot((x_train.T - mu_1).T, (x_train.T - mu_1)), axis=1) / np.sum(t_train)
-            # sigma2 = 1/N2 sum [n in C2] (xn-mu_2)(xn-mu2)t but self.lamb must be added to the diagonal
-            sigma2 = np.sum((1 - t_train) * np.dot((x_train.T - mu_2).T, (x_train.T - mu_2)), axis=1) / np.sum(1 - t_train)
-        
+            mu_1 = np.sum(t_train[:, np.newaxis] * x_train, axis=0) / N1
+            mu_2 = np.sum((1 - t_train[:, np.newaxis]) * x_train, axis=0) / N2
+                    
+            x_t_1 = x_train - mu_1
+            x_t_2 = x_train - mu_2
+                    
+            sigma1_matrices = x_t_1[:, :, np.newaxis] * x_t_1[:, np.newaxis, :]
+            sigma2_matrices = x_t_2[:, :, np.newaxis] * x_t_2[:, np.newaxis, :]
+                    
+            sigma1 = np.sum(sigma1_matrices * t_train[:, np.newaxis, np.newaxis], axis=0) / N1
+            sigma2 = np.sum(sigma2_matrices * (1 - t_train[:, np.newaxis, np.newaxis]), axis=0) / N2
+                    
+            sigma = p * sigma1 + (1 - p) * sigma2 + self.lamb * np.eye(2)
+            
+            sigma_inv = np.linalg.inv(sigma)
 
-            # sigma = p * sigma1 + (1-p) * sigma2 but self.lamb must be added to the diagonal
-            sigma = p * sigma1 + (1 - p) * sigma2
+            self.w = np.dot(sigma_inv, (mu_1 - mu_2))
+
+            self.w_0 = -0.5 * np.dot(np.dot(mu_1.T, sigma_inv), mu_1) \
+                    + 0.5 * np.dot(np.dot(mu_2.T, sigma_inv), mu_2) \
+                    + np.log(p / (1-p))
+
 
 
 

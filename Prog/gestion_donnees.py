@@ -19,10 +19,9 @@ class GestionDonnees:
         """
         Fonction qui genere des donnees de test et d'entrainement.
 
-        modele_gen : 'lineaire', 'sin' ou 'tanh'
         nb_train : nb de donnees d'entrainement
         nb_test : nb de donnees de test
-        bruit : amplitude du bruit (superieur ou egale a zero
+        bruit : amplitude du bruit (superieur ou egale a zero)
         """
         np.random.seed(12)  # commentez cette ligne pour tester differentes configurations
         mu1 = np.random.randn(2)
