@@ -101,24 +101,21 @@ class ClassifieurLineaire:
             print('Perceptron')
 
             # On initialise les paramètres
-            self.w = np.random.randn(2)
-            self.w_0 = np.random.randn(1)
+            self.w = np.random.rand(x_train.shape[1])
+            self.w_0 = np.random.rand()
             learning_rate = 0.001
             nb_iterations_max = 1000
-            iter = 0
-            convergence = False
 
             # On effectue la descente de gradient
-            while not convergence and iter < nb_iterations_max:
-                for i in range(len(t_train)):
-                    if t_train[i] * (np.dot(self.w, x_train[i]) + self.w_0) <= 0:
-                        self.w += learning_rate * t_train[i] * x_train[i]
-                        self.w_0 += learning_rate * t_train[i]
-                iter += 1
+            for iter in range(nb_iterations_max):
+                for i in range(t_train.shape[0]):
+                    # Actual output
+                    z = np.dot(self.w, x_train[i]) + self.w_0
+                    z_act = 1 if z >= 0 else 0
 
-            
-
-            
+                    # Update weights
+                    self.w += learning_rate * ((t_train[i] - z_act) * x_train[i])
+                    self.w_0 += learning_rate * (t_train[i] - z_act)
 
 
         else:  # Perceptron + SGD [sklearn] + learning rate = 0.001 + penalty 'l2' voir http://scikit-learn.org/
